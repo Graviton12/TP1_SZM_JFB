@@ -64,6 +64,9 @@ paste('Median', median(dataset$garage))
 paste('Variance', var(dataset$garage))
 paste('Standard Deviation', sd(dataset$garage))
 
+# standard deviation for every variable
+sapply(dataset, sd)
+
 # looking at distribution of data
 # histogram of square meter
 ggplot(data=dataset, aes(x=squareMeters))+geom_histogram(fill = 'orange', color='brown')+
@@ -93,8 +96,67 @@ ggplot(data=dataset, aes(x=garage))+geom_histogram(fill = 'purple', color='darkr
 ggplot(data=dataset, aes(x=made))+geom_histogram(fill = 'darkorange', color='darkred')+
   xlab('When House was Made')
 
+# histogram of the number of guest rooms
+ggplot(data=dataset, aes(x=hasGuestRoom))+geom_histogram(binwidth = 1, fill = 'magenta', color = 'purple')
+
+# histogram of price of house
+ggplot(data=dataset, aes(x=price))+geom_histogram(fill = 'navy', color = 'blue')
+
+# barplot of whether the house is newly built or not
+ggplot(data=dataset, aes(x=isNewBuilt))+geom_bar(fill='darkgreen')
+
+# barplot of whether the house has a yard or not
+ggplot(data=dataset, aes(x=hasYard))+geom_bar(fill='darkblue')
+
+# barplot of whether the house has a pool or not
+ggplot(data=dataset, aes(x=hasPool))+geom_bar(fill='darkorange')
+
+# barplot of whether the house has a storage room or not
+ggplot(data=dataset, aes(x=hasStorageRoom))+geom_bar(fill='darkred')
+
 # line graph of price and square meters
 ggplot(data=dataset, aes(x=squareMeters, y=price))+geom_line(color = 'blue')+
   xlab('Square Meters')+ylab('Price')
 
-# regression analysis
+# filtering data to view the top 50% largest houses
+largest_homes=dataset %>% 
+  filter(squareMeters>50000)
+# viewing top 50% largest homes
+head(largest_homes)
+# viewing the prices of the top 50% largest homes
+head(largest_homes$price)
+# line graph of top 50% largest houses and price
+largest_homes %>% 
+ggplot(aes(x=squareMeters, y=price))+
+  geom_line(color = 'darkgreen')+
+  xlab('Square Meters for the Top 50% Largest Homes')+ylab('Price')
+
+# comparing houses that have a yard and a pool with houses that don't
+# houses that have pools and yards
+yard_and_pool=dataset %>% 
+  filter(hasYard==1 & hasPool==1) 
+# viewing prices for the houses with pools and yards
+head(yard_and_pool$price)
+
+# houses that don't have pools and yards
+no_yards_and_pool=dataset %>% 
+  filter(hasYard==0 & hasPool==0)
+# viewing prices for the houses with no pools and yards
+head(no_yards_and_pool$price)
+
+# based on this, we can see that the houses that have a yard and a pool tend to be higher in price.
+
+# comparing new houses and old houses
+# houses that are newly built
+newly_built=dataset %>% 
+  filter(isNewBuilt==1)
+# viewing prices for houses that are newly built
+head(newly_built$price)
+
+# houses that are old 
+old_built=dataset %>% 
+  filter(isNewBuilt==0)
+# viewing prices for houses that are old
+head(old_built$price)
+
+# based on this, we can see that the houses that are newly built tend to be more expensive.
