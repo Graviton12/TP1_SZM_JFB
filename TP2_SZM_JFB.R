@@ -114,9 +114,16 @@ ggplot(data=dataset, aes(x=hasPool))+geom_bar(fill='darkorange')
 # barplot of whether the house has a storage room or not
 ggplot(data=dataset, aes(x=hasStorageRoom))+geom_bar(fill='darkred')
 
+# barplot of whether the house has a storm protector or not
+ggplot(data=dataset, aes(x=hasStormProtector))+geom_bar(fill='gold')
+
 # line graph of price and square meters
 ggplot(data=dataset, aes(x=squareMeters, y=price))+geom_line(color = 'blue')+
   xlab('Square Meters')+ylab('Price')
+
+# scatter plot of price and square meters
+ggplot(data=dataset, aes(x=squareMeters, y=price))+geom_point(color='lightgreen')+
+  geom_line(color='red')+xlab('Square Meters')+ylab('Price')
 
 # filtering data to view the top 50% largest houses
 largest_homes=dataset %>% 
@@ -160,3 +167,41 @@ old_built=dataset %>%
 head(old_built$price)
 
 # based on this, we can see that the houses that are newly built tend to be more expensive.
+
+# regression analysis
+# multiple regression analysis
+library(caTools)
+split=sample.split(dataset$price,SplitRatio=.80)
+
+training_set=subset(dataset,split==TRUE)
+test_set=subset(dataset,split==FALSE)
+
+regressor=lm(price~.,data=training_set)
+summary(regressor)
+y_pred=predict(regressor,newdata = test_set)
+
+saved=data.frame(test_set$price,y_pred)
+head(saved)
+
+# analyzing statistics
+library(Metrics)
+paste('RMSE:',rmse(test_set$price,y_pred))
+paste('MAE:',mae(test_set$price,y_pred))
+
+# second regression analysis using only valid predictor values
+# the valid predictor values are decided based on small p-values in original regression analysis
+# hopefully this will create an even more accurate linear model for prediction
+valid_data=dataset %>% 
+  select('price','squareMeters','hasYard','hasPool','floors','cityPartRange','isNewBuilt','hasStormProtector')
+
+split2=sample.split(valid_data$price,SplitRatio=.80)
+
+training_set2=subset(valid_data,split2==TRUE)
+test_set2=subset(valid_data,split2==FALSE)
+
+regressor2=lm(price~.,data=training_set2)
+summary(regressor2)
+y_pred2=predict(regressor2,newdata = test_set2)
+
+saved2=data.frame(test_set2$price,y_pred2)
+head(saved2)
